@@ -18,19 +18,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String stringResponse;
   List listResponse;
+  Map mapResponse;
+
+  List listforFacts;
 
   String si = "https://thegrowingdeveloper.org/apiview?id=1";
   String si1 = "https://thegrowingdeveloper.org/apiview?id=4";
+  String si2 = "https://thegrowingdeveloper.org/apiview?id=2";
 
   Future fetchData() async {
     http.Response response;
 
-    response = await http.get(Uri.encodeFull(si1));
+    response = await http.get(Uri.encodeFull(si2));
     if (response.statusCode == 200) {
       setState(() {
         //FOR STRING "stringResponse=response.body"
         //FOR LIST  "listResponse=json.decode(response.body)"  before that add "import 'dart:convert';"
-        listResponse = json.decode(response.body);
+        mapResponse = json.decode(response.body);
+        listforFacts = mapResponse['facts'];
       });
     }
     //or also
@@ -51,11 +56,47 @@ class _HomePageState extends State<HomePage> {
         title: Text('Fetching Data from Web(Internet)'),
         backgroundColor: Colors.teal[900],
       ),
-      body: listResponse == null
+      body: mapResponse == null
           ? Container()
-          : Text(
-              listResponse.toString(),
-              style: TextStyle(fontSize: 25),
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text(
+                    mapResponse['category'].toString(),
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    //For Scrolling
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            Text(
+                              listforFacts[index]['title'].toString(),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              listforFacts[index]['description'].toString(),
+                              style: TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.normal),
+                            ),
+                            SizedBox(
+                              height: 100,
+                            ),
+                            //Showing error for http connections
+                            // Image.network(listforFacts[index]['image_url'])
+                          ],
+                        ),
+                      );
+                    },
+                    itemCount: listforFacts == null ? 0 : listforFacts.length,
+                  ),
+                ],
+              ),
             ),
     );
   }
