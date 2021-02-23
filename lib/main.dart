@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                               height: 100,
                             ),
                             //Showing error for http connections
-                            // Image.network(listforFacts[index]['image_url'])
+                            Image.network(listforFacts[index]['image_url'])
                           ],
                         ),
                       );
